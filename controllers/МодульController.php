@@ -11,7 +11,7 @@ use yii\web\NotFoundHttpException;
 /**
  * МодульController implements the CRUD actions for Модуль model.
  */
-class МодульController extends AppController
+class МодульController extends CRUDController
 {
 
     
@@ -31,11 +31,27 @@ class МодульController extends AppController
         throw new NotFoundHttpException('The requested page does not exist.');
     }
     
-    protected function getModel(){
+    public function getModel(){
         return new Модуль();
     }
     
-    protected function getModelSearch(){
+    public function getModelSearch(){
         return new МодульSearch();
+    }
+    
+    public function getIndexTitle(){
+        return 'Список свободных модулей';
+    }
+    
+    public function getViewTitle(){
+        return $this->model->IMEI;
+    }
+    
+    public function getCreateTitle(){
+        return 'Добавление нового модуля';
+    }
+    
+    public function getUpdateTitle(){
+        return 'Редактирование параметров модуля IMEI = '.$this->model->IMEI;
     }
 }

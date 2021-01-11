@@ -7,13 +7,10 @@ use Yii;
 /**
  * This is the model class for table "Модуль".
  * *
- * @property int $id
- * @property string $code
- * @property string $name
- * @property int $population
+ * @property 
  */
 
-class Модуль extends \yii\db\ActiveRecord
+class Модуль extends CRUD
 {
     /**
      * {@inheritdoc}
@@ -23,9 +20,17 @@ class Модуль extends \yii\db\ActiveRecord
         return 'Модуль';
     }
     
-    public function prepareData(){
-        $this->времяПоследнегоОбновления = Yii::$app->formatter->
-        format($this->времяПоследнегоОбновления, 'relativeTime');
+    
+    public function getListEntryData(){
+        $data = [];
+        $data['href'] = Yii::$app->urlManager->createUrl(['модуль/view', 'id' => $this->id]);
+        $data['title'] = $this->IMEI;
+        $data['ID'] = $this->id;
+        $data['Последняя активность'] = Yii::$app->formatter->format($this->времяПоследнейАктивности,'relativeTime');
+        $data['Последнее обновление данных'] = Yii::$app->formatter->format($this->времяПоследнегоОбновления,'relativeTime');
+        $statuses=[-1=>"Ошибка обновления", 0=>"Нет данных", 1=>"Успешно", 2=>"Идёт обновление"];
+        $data['Статус обновления'] = $statuses[$this->статусОбновления];
+        return $data;
     }
     
     /**
