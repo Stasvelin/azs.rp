@@ -525,7 +525,9 @@ class Module extends ServiceLocator
      */
     public function runAction($route, $params = [])
     {
+        
         $parts = $this->createController($route);
+        
         if (is_array($parts)) {
             /* @var $controller Controller */
             list($controller, $actionID) = $parts;
@@ -544,7 +546,7 @@ class Module extends ServiceLocator
     }
 
     /**
-     * Creates a controller instance based on the given route.
+     * ateates a controller instance based on the given route.
      *
      * The route should be relative to this module. The method implements the following algorithm
      * to resolve the given route:
@@ -567,6 +569,7 @@ class Module extends ServiceLocator
      */
     public function createController($route)
     {
+        
         if ($route === '') {
             $route = $this->defaultRoute;
         }
@@ -583,7 +586,9 @@ class Module extends ServiceLocator
             $id = $route;
             $route = '';
         }
-
+        
+        
+        
         // module and controller map take precedence
         if (isset($this->controllerMap[$id])) {
             $controller = Yii::createObject($this->controllerMap[$id], [$id, $this]);
@@ -623,6 +628,7 @@ class Module extends ServiceLocator
      */
     public function createControllerByID($id)
     {
+        
         $pos = strrpos($id, '/');
         if ($pos === false) {
             $prefix = '';
@@ -636,11 +642,13 @@ class Module extends ServiceLocator
             return null;
         }
 
-        $className = preg_replace_callback('%-([a-z0-9_])%i', function ($matches) {
-                return ucfirst($matches[1]);
-            }, ucfirst($className)) . 'Controller';
+        $className = preg_replace_callback('%-([а-яa-z0-9_])%i', function ($matches) {
+                return $this->mb_ucfirst($matches[1]);
+            }, $this->mb_ucfirst($className)) . 'Controller';
+
         $className = ltrim($this->controllerNamespace . '\\' . str_replace('/', '\\', $prefix) . $className, '\\');
         if (strpos($className, '-') !== false || !class_exists($className)) {
+            
             return null;
         }
 
@@ -654,6 +662,12 @@ class Module extends ServiceLocator
         return null;
     }
 
+
+    private function mb_ucfirst($text) {
+        
+        return mb_strtoupper(mb_substr($text, 0, 1)) . mb_substr($text, 1, null);
+    }
+
     /**
      * Checks if class name or prefix is incorrect
      *
@@ -663,10 +677,10 @@ class Module extends ServiceLocator
      */
     private function isIncorrectClassNameOrPrefix($className, $prefix)
     {
-        if (!preg_match('%^[a-z][a-z0-9\\-_]*$%', $className)) {
+        if (!preg_match('%^[а-яa-z][а-яa-z0-9\\-_]*$%u', $className)) {
             return true;
         }
-        if ($prefix !== '' && !preg_match('%^[a-z0-9_/]+$%i', $prefix)) {
+        if ($prefix !== '' && !preg_match('%^[а-яa-z0-9_/]+$%i', $prefix)) {
             return true;
         }
 
